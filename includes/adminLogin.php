@@ -25,9 +25,10 @@
 
        if(mysqli_num_rows($result) > 0){
          $row = mysqli_fetch_assoc($result);
+
          session_start();
          $_SESSION['adminId'] = $row['id'];
-
+         
          if(isset($_SESSION['adminId'])){
             $success = urlencode("Welcome to dashboard");
            header('location: ../adminPanel.php?success='.$success);
