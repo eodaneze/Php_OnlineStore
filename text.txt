@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css" />
+
+
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script>
+    <?php 
+       if(isset($_SESSION['error'])){
+          ?>alertify.set('notifier', 'position', 'top-right');
+    alertify.error('<?=$_SESSION['error']?>');
+    <?php
+          unset($_SESSION['error']);
+       }elseif(isset($_SESSION['success'])){
+                ?>
+    alertify.set('notifier', 'position', 'top-right');
+    alertify.success('<?=$_SESSION['success']?>');
+    <?php
+        unset($_SESSION['success']);
+       }
+     ?>
+    </script>
+
+
+
+
+
+
+
+
+
+    <?php
+require_once('./connection.php');
+  if(isset($_POST['add'])){
+     $pname = $_POST['pname'];  
+     $pprice = $_POST['pprice'];  
+     $prating = $_POST['prating'];  
+     $pstock = $_POST['pstock'];  
+     $pcat = $_POST['pcat'];  
+     $descp = $_POST['descp'];  
+     
+     if($pname == "" || $pprice == "" || $prating == "" || $pstock == "" || $pcat == "" || $descp == ""){
+         $error = urlencode("All Fields are required"); 
+         header('location: ../addProduct.php?error='.$error);
+         exit();
+     }else{
+         if($_FILES['file']['name'] != ''){
+            $filename = $_FILES['file']['name'];
+            $filetmp = $_FILES['file']['tmp_name'];
+            $filesize = $_FILES['file']['size'];
+            $filetype = $_FILES['file']['type'];
+            $fileext = explode('.', $filename);
+            $fileactualext = strtolower(end($fileext));
+
+            $allow = array('jpg', 'jpeg', 'png', 'gif');
+            if(in_array($fileactualext, $allow)){
+                if($filesize < 8000000){
+                    $pic = uniqid('',true).'.'.$fileactualext;
+                    $filedestination = 'productImg/'.$pic;
+
+                    if(move_uploaded_file($filetmp, $filedestination)){
+                        $sql = "INSERT INTO products(pname)VALUES('$pname')";
+                        $result = mysqli_query( $conn, $sql);
+                        print_r($result);
+                        die();
+                          if($result){
+                            $success = urlencode("Product Added successfully"); 
+                            header('location: ../addProduct.php?success='.$success);
+                            exit();
+                           }else{
+                              $error = urlencode("error adding product");
+                               header('location: ../addProduct.php?error='.$error);
+                                 exit();
+                           }
+                    }else{
+                        $error = urlencode("error Uploading Picture");
+                        header('location: ../addProduct.php?error='.$error);
+                        exit();
+                    }
+                }else{
+                    $error = urlencode("Unsupported file format");
+                    header('location: ../addProduct.php?error='.$error);
+                     exit();
+                }
+            }else{
+                $error = urlencode("Please upload a picture");
+                header('location: ../addProduct.php?error='.$error);
+                exit();
+            }
+         }
+     }
+}
+
+?>

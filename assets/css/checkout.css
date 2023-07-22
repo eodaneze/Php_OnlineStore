@@ -1,0 +1,17 @@
+.checkout-content{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: red;
+    padding: 40px;
+}
+.checkout-left{
+    flex-basis: 48%;
+    background-color: white;
+    border: 1px solid #ccc;
+    height: 50vh;
+}
+body{
+    background-color: red;
+}
